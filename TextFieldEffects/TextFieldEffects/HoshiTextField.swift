@@ -12,7 +12,6 @@ import UIKit
  An HoshiTextField is a subclass of the TextFieldEffects object, is a control that displays an UITextField with a customizable visual effect around the lower edge of the control.
  */
 @IBDesignable open class HoshiTextField: TextFieldEffects {
-    
     /**
      The color of the border when it has no content.
      
@@ -114,8 +113,8 @@ import UIKit
     }
     
     override open func animateViewsForTextDisplay() {
-        if text!.isEmpty {
-            UIView.animate(withDuration: 0.35, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 2.0, options: UIViewAnimationOptions.beginFromCurrentState, animations: ({
+        if let text = text, text.isEmpty {
+            UIView.animate(withDuration: 0.35, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 2.0, options: .beginFromCurrentState, animations: ({
                 self.layoutPlaceholderInTextRect()
                 self.placeholderLabel.alpha = 1
             }), completion: { _ in
@@ -123,16 +122,18 @@ import UIKit
             })
             
             activeBorderLayer.frame = self.rectForBorder(self.borderThickness.active, isFilled: false)
+            inactiveBorderLayer.frame = self.rectForBorder(self.borderThickness.inactive, isFilled: true)
+
         }
     }
     
     // MARK: - Private
     
     private func updateBorder() {
-        inactiveBorderLayer.frame = rectForBorder(borderThickness.inactive, isFilled: true)
+        inactiveBorderLayer.frame = rectForBorder(borderThickness.inactive, isFilled: !isFirstResponder)
         inactiveBorderLayer.backgroundColor = borderInactiveColor?.cgColor
         
-        activeBorderLayer.frame = rectForBorder(borderThickness.active, isFilled: false)
+        activeBorderLayer.frame = rectForBorder(borderThickness.active, isFilled: isFirstResponder)
         activeBorderLayer.backgroundColor = borderActiveColor?.cgColor
     }
     
@@ -148,7 +149,7 @@ import UIKit
     }
     
     private func placeholderFontFromFont(_ font: UIFont) -> UIFont! {
-        let smallerFont = UIFont(name: font.fontName, size: font.pointSize * placeholderFontScale)
+        let smallerFont = UIFont(descriptor: font.fontDescriptor, size: font.pointSize * placeholderFontScale)
         return smallerFont
     }
     

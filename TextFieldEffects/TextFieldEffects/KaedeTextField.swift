@@ -12,7 +12,6 @@ import UIKit
  A KaedeTextField is a subclass of the TextFieldEffects object, is a control that displays an UITextField with a customizable visual effect around the foreground of the control.
  */
 @IBDesignable open class KaedeTextField: TextFieldEffects {
-    
     /**
      The color of the placeholder text.
      
@@ -46,6 +45,11 @@ import UIKit
         }
     }
     
+    /**
+     The starting x position (as a percentage) of the placeholder area.
+     */
+    @IBInspectable dynamic open var placeholderSplit: CGFloat = 0.6
+    
     override open var placeholder: String? {
         didSet {
             updatePlaceholder()
@@ -65,7 +69,7 @@ import UIKit
     // MARK: - TextFieldEffects
 
     override open func drawViewsForRect(_ rect: CGRect) {
-        let frame = CGRect(origin: CGPoint.zero, size: CGSize(width: rect.size.width, height: rect.size.height))
+        let frame = CGRect(origin: .zero, size: CGSize(width: rect.size.width, height: rect.size.height))
         
         foregroundView.frame = frame
         foregroundView.isUserInteractionEnabled = false
@@ -93,11 +97,11 @@ import UIKit
 		}
 
         UIView.animate(withDuration: 0.35, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 2.0, options: .beginFromCurrentState, animations: ({
-            self.placeholderLabel.frame.origin = CGPoint(x: self.frame.size.width * 0.65 * directionOverride, y: self.placeholderInsets.y)
+            self.placeholderLabel.frame.origin = CGPoint(x: self.frame.size.width * (self.placeholderSplit + 0.05) * directionOverride, y: self.placeholderInsets.y)
         }), completion: nil)
         
         UIView.animate(withDuration: 0.45, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1.5, options: .beginFromCurrentState, animations: ({
-            self.foregroundView.frame.origin = CGPoint(x: self.frame.size.width * 0.6 * directionOverride, y: 0)
+            self.foregroundView.frame.origin = CGPoint(x: self.frame.size.width * self.placeholderSplit * directionOverride, y: 0)
         }), completion: { _ in
             self.animationCompletionHandler?(.textEntry)
         })
@@ -129,14 +133,14 @@ import UIKit
     }
     
     private func placeholderFontFromFont(_ font: UIFont) -> UIFont! {
-        let smallerFont = UIFont(name: font.fontName, size: font.pointSize * placeholderFontScale)
+       let smallerFont = UIFont(descriptor: font.fontDescriptor, size: font.pointSize * placeholderFontScale)
         return smallerFont
     }
     
     // MARK: - Overrides
         
     override open func editingRect(forBounds bounds: CGRect) -> CGRect {
-        var frame = CGRect(origin: bounds.origin, size: CGSize(width: bounds.size.width * 0.6, height: bounds.size.height))
+        var frame = CGRect(origin: bounds.origin, size: CGSize(width: bounds.size.width * placeholderSplit, height: bounds.size.height))
 
 		if #available(iOS 9.0, *) {
 			if UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft {

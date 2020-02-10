@@ -12,7 +12,6 @@ import UIKit
  A MinoruTextField is a subclass of the TextFieldEffects object, is a control that displays an UITextField with a customizable visual effect around the edges of the control.
  */
 @IBDesignable open class MinoruTextField: TextFieldEffects {
-    
     /**
      The color of the placeholder text.
      
@@ -74,7 +73,7 @@ import UIKit
         updateBorder()
         updatePlaceholder()
         
-        layer.addSublayer(borderLayer)
+		layer.insertSublayer(borderLayer, at: 0)
         addSubview(placeholderLabel)        
     }
     
@@ -130,7 +129,7 @@ import UIKit
     }
     
     private func placeholderFontFromFont(_ font: UIFont) -> UIFont! {
-        let smallerFont = UIFont(name: font.fontName, size: font.pointSize * placeholderFontScale)
+        let smallerFont = UIFont(descriptor: font.fontDescriptor, size: font.pointSize * placeholderFontScale)
         return smallerFont
     }
     
